@@ -1,15 +1,31 @@
 // ─────────────────────────────────────────────────────────────
 // js/leave-requests.js — หน้าที่ 1 รายการใบลา
-// สัปดาห์ที่ 6 (ต้นสัปดาห์): อ่านจากข้อมูลปลอมใน js/data.js
+// สัปดาห์ที่ 6: อ่านสดจาก Firestore (collection "leaveRequests")
 // ─────────────────────────────────────────────────────────────
 
-(function () {
+(async function () {
   var กล่อง = document.getElementById("ผลลัพธ์");
 
-  // ใบลาจากข้อมูลปลอม บวกกับใบที่เพิ่งยื่นในหน้าถัดไป
-  // (สัปดาห์นี้ยังไม่ต่อฐานข้อมูล ใบที่ยื่นใหม่จึงหายเมื่อปิดเบราว์เซอร์)
+  // ใบลาที่เพิ่งยื่นในหน้าถัดไป (สัปดาห์นี้ยังไม่บันทึกลง Firestore จริง จึงหายเมื่อปิดเบราว์เซอร์)
   var ใบลาที่ยื่นใหม่ = JSON.parse(sessionStorage.getItem("ใบลาที่ยื่นใหม่") || "[]");
-  var ใบลาทั้งหมด = window.LEAVE_DATA.leaveRequests.concat(ใบลาที่ยื่นใหม่);
+
+  var ใบลาทั้งหมด;
+  try {
+    var สแนปช็อต = await db.collection("leaveRequests").get();
+    var ใบลาจากฐานข้อมูล = สแนปช็อต.docs.map(function (d) {
+      return Object.assign({ id: d.id }, d.data());
+    });
+    ใบลาทั้งหมด = ใบลาจากฐานข้อมูล.concat(ใบลาที่ยื่นใหม่);
+
+    // เรียงจากใบที่ยื่นล่าสุดไปเก่าสุด
+    ใบลาทั้งหมด.sort(function (a, b) { return b.createdAt.localeCompare(a.createdAt); });
+  } catch (err) {
+    กล่อง.innerHTML = "<p>โหลดข้อมูลจาก Firestore ไม่สำเร็จ</p>";
+    if (typeof showConfigWarning === "function") {
+      showConfigWarning("ตรวจสอบว่าเปิดใช้งาน Firestore Database ในคอนโซลแล้ว และค่าใน js/firebase-config.js ถูกต้อง (" + err.message + ")");
+    }
+    return;
+  }
 
   // ถ้ามีสถานะติดมาท้าย URL ให้กรองเฉพาะสถานะนั้น
   var สถานะที่กรอง = ค่าจากURL("status");
