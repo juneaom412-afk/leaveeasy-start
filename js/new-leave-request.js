@@ -39,22 +39,24 @@
     }
 
     var ประเภท = window.LEAVE_DATA.leaveTypes.find(function (t) { return t.id === ค่า.leaveTypeId; });
-
-    // ยังไม่มีล็อกอิน (เป็นงานถัดไป) จึงสมมติว่าผู้ขอลาคือ สมชาย ใจดี ไปก่อน
-    var ใบใหม่ = {
-      title: ค่า.title,
-      reason: ค่า.reason,
-      status: "รอพิจารณา",                       // ใบใหม่เริ่มที่ รอพิจารณา เสมอ
-      requesterId: "u001", requesterName: "สมชาย ใจดี",
-      approverId: "",      approverName: "",
-      leaveTypeId: ประเภท.id, leaveTypeName: ประเภท.name,
-      startDate: ค่า.startDate,
-      endDate: ค่า.endDate,
-      createdAt: เวลาตอนนี้()
-    };
+    var ผู้ใช้ = auth.currentUser;
 
     ปุ่มบันทึก.disabled = true;
-    db.collection("leaveRequests").add(ใบใหม่)
+    db.collection("users").doc(ผู้ใช้.uid).get()
+      .then(function (เอกสารผู้ใช้) {
+        var ใบใหม่ = {
+          title: ค่า.title,
+          reason: ค่า.reason,
+          status: "รอพิจารณา",                       // ใบใหม่เริ่มที่ รอพิจารณา เสมอ
+          requesterId: ผู้ใช้.uid, requesterName: เอกสารผู้ใช้.data().name,
+          approverId: "",      approverName: "",
+          leaveTypeId: ประเภท.id, leaveTypeName: ประเภท.name,
+          startDate: ค่า.startDate,
+          endDate: ค่า.endDate,
+          createdAt: เวลาตอนนี้()
+        };
+        return db.collection("leaveRequests").add(ใบใหม่);
+      })
       .then(function () {
         location.href = "leave-requests.html";
       })
