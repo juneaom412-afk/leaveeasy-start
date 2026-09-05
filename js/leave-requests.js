@@ -6,16 +6,12 @@
 (async function () {
   var กล่อง = document.getElementById("ผลลัพธ์");
 
-  // ใบลาที่เพิ่งยื่นในหน้าถัดไป (สัปดาห์นี้ยังไม่บันทึกลง Firestore จริง จึงหายเมื่อปิดเบราว์เซอร์)
-  var ใบลาที่ยื่นใหม่ = JSON.parse(sessionStorage.getItem("ใบลาที่ยื่นใหม่") || "[]");
-
   var ใบลาทั้งหมด;
   try {
     var สแนปช็อต = await db.collection("leaveRequests").get();
-    var ใบลาจากฐานข้อมูล = สแนปช็อต.docs.map(function (d) {
+    ใบลาทั้งหมด = สแนปช็อต.docs.map(function (d) {
       return Object.assign({ id: d.id }, d.data());
     });
-    ใบลาทั้งหมด = ใบลาจากฐานข้อมูล.concat(ใบลาที่ยื่นใหม่);
 
     // เรียงจากใบที่ยื่นล่าสุดไปเก่าสุด
     ใบลาทั้งหมด.sort(function (a, b) { return b.createdAt.localeCompare(a.createdAt); });
