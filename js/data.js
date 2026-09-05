@@ -59,7 +59,7 @@ window.LEAVE_DATA = {
       approverId: "",      approverName: "",
       leaveTypeId: "lt003", leaveTypeName: "ลากิจ",
       startDate: "2026-09-15", endDate: "2026-09-15",
-      createdAt: "2026-09-10 16:30"
+      createdAt: "2026-09-02 16:30"
     },
     {
       id: "lr004",
@@ -70,7 +70,7 @@ window.LEAVE_DATA = {
       approverId: "u002",  approverName: "สมหญิง รักงาน",
       leaveTypeId: "lt001", leaveTypeName: "ลาพักร้อน",
       startDate: "2026-10-12", endDate: "2026-10-16",
-      createdAt: "2026-09-20 11:00"
+      createdAt: "2026-09-04 11:00"
     },
     {
       id: "lr005",
@@ -81,7 +81,7 @@ window.LEAVE_DATA = {
       approverId: "u002",  approverName: "สมหญิง รักงาน",
       leaveTypeId: "lt002", leaveTypeName: "ลาป่วย",
       startDate: "2026-09-22", endDate: "2026-09-22",
-      createdAt: "2026-09-18 14:45"
+      createdAt: "2026-09-03 14:45"
     }
   ],
 
@@ -111,7 +111,7 @@ window.LEAVE_DATA = {
       id: "ap004", requestId: "lr004",
       authorId: "u002", authorName: "สมหญิง รักงาน",
       message: "ช่วงนั้นทีมมีงานส่งมอบพอดี ขอเลื่อนเป็นสัปดาห์ถัดไปได้ไหมครับ",
-      createdAt: "2026-09-20 15:10"
+      createdAt: "2026-09-04 15:10"
     }
   ]
 };
