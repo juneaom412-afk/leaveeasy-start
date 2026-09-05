@@ -10,6 +10,7 @@
 
   var ผู้ใช้ = await รอสถานะล็อกอิน;
   if (!ผู้ใช้) return;   // ยังไม่ล็อกอิน — nav.js จะเด้งไปหน้า login ให้เอง
+  var role = await รอบทบาทผู้ใช้;
 
   var ใบ, ความเห็น;
   try {
@@ -19,6 +20,12 @@
       return;
     }
     ใบ = Object.assign({ id: เอกสาร.id }, เอกสาร.data());
+
+    // ผู้ขอลาเปิดดูใบของผู้ขอลาคนอื่นไม่ได้ (ผู้อนุมัติ/ฝ่ายบุคคลเปิดได้ทุกใบ)
+    if (role === "employee" && ใบ.requesterId !== ผู้ใช้.uid) {
+      กล่องใบลา.innerHTML = "<p>คุณไม่มีสิทธิ์ดูใบลานี้</p>";
+      return;
+    }
 
     var สแนปช็อตความเห็น = await db.collection("leaveRequests").doc(รหัสใบลา).collection("approvals").get();
     ความเห็น = สแนปช็อตความเห็น.docs.map(function (d) {
@@ -55,23 +62,33 @@
       return '<div class="field-row"><span class="k">' + r[0] + "</span><span>" + r[1] + "</span></div>";
     }).join("");
 
-    // ปุ่มอนุมัติ / ไม่อนุมัติ ขึ้นเฉพาะใบที่ยังรอพิจารณา
-    if (ใบ.status === "รอพิจารณา") {
-      html +=
-        '<div class="btn-row">' +
-        '<button type="button" class="btn-ok" id="ปุ่มอนุมัติ">อนุมัติ</button>' +
-        '<button type="button" class="btn-danger" id="ปุ่มไม่อนุมัติ">ไม่อนุมัติ</button>' +
-        '<button type="button" class="btn-danger" id="ปุ่มลบ">ลบใบลานี้</button>' +
-        "</div>";
-    } else {
+    // ปุ่มอนุมัติ/ไม่อนุมัติ — เฉพาะผู้อนุมัติ/ฝ่ายบุคคล และใบที่ยังรอพิจารณา
+    var ให้อนุมัติได้ = ใบ.status === "รอพิจารณา" && (role === "manager" || role === "hr");
+    // ปุ่มลบ — เฉพาะเจ้าของใบ หรือฝ่ายบุคคล (ผู้อนุมัติลบของคนอื่นไม่ได้) และใบที่ยังรอพิจารณา
+    var ให้ลบได้ = ใบ.status === "รอพิจารณา" && (ผู้ใช้.uid === ใบ.requesterId || role === "hr");
+
+    if (ให้อนุมัติได้ || ให้ลบได้) {
+      html += '<div class="btn-row">';
+      if (ให้อนุมัติได้) {
+        html +=
+          '<button type="button" class="btn-ok" id="ปุ่มอนุมัติ">อนุมัติ</button>' +
+          '<button type="button" class="btn-danger" id="ปุ่มไม่อนุมัติ">ไม่อนุมัติ</button>';
+      }
+      if (ให้ลบได้) {
+        html += '<button type="button" class="btn-danger" id="ปุ่มลบ">ลบใบลานี้</button>';
+      }
+      html += "</div>";
+    } else if (ใบ.status !== "รอพิจารณา") {
       html += '<p class="hint">ใบนี้พิจารณาแล้ว จึงเปลี่ยนสถานะต่อไม่ได้</p>';
     }
 
     กล่องใบลา.innerHTML = html;
 
-    if (ใบ.status === "รอพิจารณา") {
+    if (ให้อนุมัติได้) {
       document.getElementById("ปุ่มอนุมัติ").addEventListener("click", function () { เปลี่ยนสถานะ("อนุมัติ"); });
       document.getElementById("ปุ่มไม่อนุมัติ").addEventListener("click", function () { เปลี่ยนสถานะ("ไม่อนุมัติ"); });
+    }
+    if (ให้ลบได้) {
       document.getElementById("ปุ่มลบ").addEventListener("click", ลบใบลา);
     }
   }

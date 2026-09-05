@@ -10,7 +10,6 @@
     { href: "index.html",             ชื่อ: "หน้าแรก" },
     { href: "leave-requests.html",    ชื่อ: "รายการใบลา" },
     { href: "new-leave-request.html", ชื่อ: "ยื่นใบลาใหม่" },
-    { href: "leave-types.html",       ชื่อ: "ประเภทการลา" },
     { href: "dashboard.html",         ชื่อ: "แดชบอร์ด" }
   ];
 
@@ -50,6 +49,18 @@
         auth.signOut().then(function () { location.href = "login.html"; });
       });
     }
+
+    // เมนู "ประเภทการลา" โชว์เฉพาะฝ่ายบุคคล (hr)
+    รอบทบาทผู้ใช้.then(function (role) {
+      if (role !== "hr") return;
+      var นำทาง = document.querySelector(".navbar");
+      if (!นำทาง || !navUser) return;
+      var ลิงก์ = document.createElement("a");
+      ลิงก์.href = "leave-types.html";
+      ลิงก์.textContent = "ประเภทการลา";
+      if (หน้าปัจจุบัน === "leave-types.html") ลิงก์.className = "active";
+      นำทาง.insertBefore(ลิงก์, navUser);
+    });
   });
 })();
 

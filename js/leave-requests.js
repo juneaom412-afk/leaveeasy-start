@@ -9,9 +9,14 @@
   var ผู้ใช้ = await รอสถานะล็อกอิน;
   if (!ผู้ใช้) return;   // ยังไม่ล็อกอิน — nav.js จะเด้งไปหน้า login ให้เอง
 
+  var role = await รอบทบาทผู้ใช้;
+
   var ใบลาทั้งหมด;
   try {
-    var สแนปช็อต = await db.collection("leaveRequests").get();
+    var คำสั่งค้นหา = (role === "employee")
+      ? db.collection("leaveRequests").where("requesterId", "==", ผู้ใช้.uid)
+      : db.collection("leaveRequests");
+    var สแนปช็อต = await คำสั่งค้นหา.get();
     ใบลาทั้งหมด = สแนปช็อต.docs.map(function (d) {
       return Object.assign({ id: d.id }, d.data());
     });

@@ -28,3 +28,12 @@ var รอสถานะล็อกอิน = new Promise(function (resolve) 
     resolve(ผู้ใช้);
   });
 });
+
+// สัญญาที่คืนค่า role ("employee"/"manager"/"hr") ของคนที่ล็อกอินอยู่ (หรือ null ถ้าไม่ได้ล็อกอิน)
+// อ่านจากเอกสาร users/<uid> — รอต่อจาก รอสถานะล็อกอิน โดยอัตโนมัติ
+var รอบทบาทผู้ใช้ = รอสถานะล็อกอิน.then(function (ผู้ใช้) {
+  if (!ผู้ใช้) return null;
+  return db.collection("users").doc(ผู้ใช้.uid).get().then(function (เอกสาร) {
+    return เอกสาร.exists ? เอกสาร.data().role : null;
+  });
+});
