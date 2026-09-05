@@ -35,7 +35,7 @@
   var หน้าไม่ต้องล็อกอิน = ["login.html", "signup.html"];
   var หน้าปัจจุบัน = location.pathname.split("/").pop() || "index.html";
 
-  auth.onAuthStateChanged(function (ผู้ใช้) {
+  รอสถานะล็อกอิน.then(function (ผู้ใช้) {
     if (!ผู้ใช้) {
       if (หน้าไม่ต้องล็อกอิน.indexOf(หน้าปัจจุบัน) === -1) {
         location.href = "login.html";

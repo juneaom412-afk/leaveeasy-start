@@ -6,6 +6,9 @@
 (async function () {
   var กล่อง = document.getElementById("ผลลัพธ์");
 
+  var ผู้ใช้ = await รอสถานะล็อกอิน;
+  if (!ผู้ใช้) return;   // ยังไม่ล็อกอิน — nav.js จะเด้งไปหน้า login ให้เอง
+
   var ใบลาทั้งหมด;
   try {
     var สแนปช็อต = await db.collection("leaveRequests").get();

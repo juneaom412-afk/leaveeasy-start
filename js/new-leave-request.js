@@ -3,11 +3,14 @@
 // สัปดาห์ที่ 7: บันทึกลง Firestore จริง (collection "leaveRequests")
 // ─────────────────────────────────────────────────────────────
 
-(function () {
+(async function () {
   var ฟอร์ม = document.getElementById("ฟอร์มใบลา");
   var ช่องประเภท = document.getElementById("leaveTypeId");
   var กล่องเตือน = document.getElementById("ข้อความเตือน");
   var ปุ่มบันทึก = document.getElementById("ปุ่มบันทึก");
+
+  var ผู้ใช้ = await รอสถานะล็อกอิน;
+  if (!ผู้ใช้) return;   // ยังไม่ล็อกอิน — nav.js จะเด้งไปหน้า login ให้เอง
 
   // เติมรายการเลื่อนลงด้วยประเภทการลาที่มีอยู่
   window.LEAVE_DATA.leaveTypes.forEach(function (ประเภท) {
@@ -39,7 +42,6 @@
     }
 
     var ประเภท = window.LEAVE_DATA.leaveTypes.find(function (t) { return t.id === ค่า.leaveTypeId; });
-    var ผู้ใช้ = auth.currentUser;
 
     ปุ่มบันทึก.disabled = true;
     db.collection("users").doc(ผู้ใช้.uid).get()

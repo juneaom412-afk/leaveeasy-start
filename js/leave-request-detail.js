@@ -8,6 +8,9 @@
   var กล่องใบลา = document.getElementById("กล่องใบลา");
   var กล่องความเห็น = document.getElementById("กล่องความเห็น");
 
+  var ผู้ใช้ = await รอสถานะล็อกอิน;
+  if (!ผู้ใช้) return;   // ยังไม่ล็อกอิน — nav.js จะเด้งไปหน้า login ให้เอง
+
   var ใบ, ความเห็น;
   try {
     var เอกสาร = await db.collection("leaveRequests").doc(รหัสใบลา).get();
